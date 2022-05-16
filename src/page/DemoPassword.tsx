@@ -1,5 +1,6 @@
-import Password from "../component/Password";
-import Layout from "../component/Layout";
+import React from 'react';
+import Password from '@/component/Password';
+import Layout from '@/component/Layout';
 
 const DemoPassword = (): JSX.Element => {
   return (
@@ -11,7 +12,7 @@ const DemoPassword = (): JSX.Element => {
         <Password />
       </div>
     </Layout>
-  )
-};
+  );
+}
 
 export default DemoPassword;

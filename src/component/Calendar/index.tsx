@@ -1,38 +1,36 @@
-import classNames from "classnames";
-import { useEffect, useState } from "react";
+import classNames from 'classnames';
+import { useEffect, useState } from 'react';
 import { ArrowBackIosNewOutlined, ArrowForwardIosOutlined } from '@mui/icons-material';
 
 const CURRENT_YEAR = +new Date().getFullYear();
 const CURRENT_MONTH = +new Date().getMonth() + 1;
 const WEEK_DAYS = {
-  Sunday: "Su",
-  Monday: "Mo",
-  Tuesday: "Tu",
-  Wednesday: "We",
-  Thursday: "Th",
-  Friday: "Fr",
-  Saturday: "Sa",
+  Sunday: 'Su',
+  Monday: 'Mo',
+  Tuesday: 'Tu',
+  Wednesday: 'We',
+  Thursday: 'Th',
+  Friday: 'Fr',
+  Saturday: 'Sa',
 };
 // Calendar months names and short names
 const CALENDAR_MONTHS = {
-  January: "January",
-  February: "February",
-  March: "March",
-  April: "April",
-  May: "May",
-  June: "June",
-  July: "July",
-  August: "August",
-  September: "September",
-  October: "October",
-  November: "November",
-  December: "December",
+  January: 'January',
+  February: 'February',
+  March: 'March',
+  April: 'April',
+  May: 'May',
+  June: 'June',
+  July: 'July',
+  August: 'August',
+  September: 'September',
+  October: 'October',
+  November: 'November',
+  December: 'December',
 };
 // Weeks displayed on calendar
 const CALENDAR_WEEKS = 6;
-const zeroPad = (value: number, length: number) => {
-  return `${value}`.padStart(length, "0");
-};
+const zeroPad = (value: number, length: number) => `${value}`.padStart(length, '0');
 const getMonthDays = (month = CURRENT_MONTH, year = CURRENT_YEAR) => {
   const months30 = [4, 6, 9, 11];
   const leapYear = year % 4 === 0;
@@ -44,12 +42,10 @@ const getMonthDays = (month = CURRENT_MONTH, year = CURRENT_YEAR) => {
       ? 30
       : 31;
 };
-const getMonthFirstDay = (month = CURRENT_MONTH, year = CURRENT_YEAR) => {
-  return +new Date(`${year}-${zeroPad(month, 2)}-01`).getDay() + 1;
-};
+const getMonthFirstDay = (month = CURRENT_MONTH, year = CURRENT_YEAR) => +new Date(`${year}-${zeroPad(month, 2)}-01`).getDay() + 1;
 
 const isDate = (date: Date) => {
-  const isDate = Object.prototype.toString.call(date) === "[object Date]";
+  const isDate = Object.prototype.toString.call(date) === '[object Date]';
   const isValidDate = date && !Number.isNaN(date.valueOf());
 
   return isDate && isValidDate;
@@ -73,9 +69,9 @@ const isSameDay = (date: Date, basedate = new Date()) => {
   const dateMonth = +date.getMonth() + 1;
   const dateYear = date.getFullYear();
   return (
-    +basedateDate === +dateDate &&
-    +basedateMonth === +dateMonth &&
-    +basedateYear === +dateYear
+    +basedateDate === +dateDate
+    && +basedateMonth === +dateMonth
+    && +basedateYear === +dateYear
   );
 };
 
@@ -85,7 +81,7 @@ const getDateISO = (date = new Date()) => {
     date.getFullYear(),
     zeroPad(+date.getMonth() + 1, 2),
     zeroPad(+date.getDate(), 2),
-  ].join("-");
+  ].join('-');
 };
 
 const getPreviousMonth = (month: number, year: number) => {
@@ -109,13 +105,12 @@ const calendar = (month = CURRENT_MONTH, year = CURRENT_YEAR) => {
   // These ensure a total of 42 days (6 weeks) displayed on the calendar
 
   const daysFromPrevMonth = monthFirstDay - 1;
-  const daysFromNextMonth =
-    CALENDAR_WEEKS * 7 - (daysFromPrevMonth + monthDays);
+  const daysFromNextMonth = CALENDAR_WEEKS * 7 - (daysFromPrevMonth + monthDays);
   // Get the previous and next months and years
 
   const { month: prevMonth, year: prevMonthYear } = getPreviousMonth(
     month,
-    year
+    year,
   );
   const { month: nextMonth, year: nextMonthYear } = getNextMonth(month, year);
   // Get number of days in previous month
@@ -177,8 +172,7 @@ export default function CalendarComponent({ date }) {
   const renderMonthAndYear = () => {
     const { month, year } = dateState;
 
-    const monthname =
-      Object.keys(CALENDAR_MONTHS)[Math.max(0, Math.min(month - 1, 11))];
+    const monthname = Object.keys(CALENDAR_MONTHS)[Math.max(0, Math.min(month - 1, 11))];
     return (
       <div className="">
         <div className="flex flex-col mx-[12px] my-[17px]">
@@ -186,7 +180,9 @@ export default function CalendarComponent({ date }) {
             Text
           </div>
           <div className="text-3xl font-bold">
-            {monthname.substring(0, 3)}, {year}
+            {monthname.substring(0, 3)}
+            ,
+            {year}
           </div>
         </div>
         <div className="flex justify-between mb-[26px]">
@@ -197,7 +193,9 @@ export default function CalendarComponent({ date }) {
             <ArrowBackIosNewOutlined sx={{ fontSize: '12px' }} />
           </div>
           <div className="text-[16px]" onClick={handleChangeYear}>
-            {calType === 'month' && monthname} {year}
+            {calType === 'month' && monthname}
+            {' '}
+            {year}
           </div>
           <div
             onClick={handleNext}
@@ -221,17 +219,15 @@ export default function CalendarComponent({ date }) {
 
   const renderCalendarDate = (date) => {
     const { current, month, year } = dateState;
-    const _date = new Date(date.join("-"));
+    const _date = new Date(date.join('-'));
     // Check if calendar date is same day as today
     const isToday = isSameDay(_date, today);
 
     // Check if calendar date is same day as currently selected date
     const isCurrent = current && isSameDay(_date, current);
 
-
     // Check if calendar date is in the same month as the state month and year
-    const inCurrentMonth =
-      month && year && isSameMonth(_date, new Date([year, month, 1].join("-")));
+    const inCurrentMonth = month && year && isSameMonth(_date, new Date([year, month, 1].join('-')));
     // The click handler
     const onClick = gotoDate(_date);
     const props = { onClick, title: _date.toDateString() };
@@ -239,10 +235,11 @@ export default function CalendarComponent({ date }) {
 
     return (
       <div
-        className={classNames('hover:bg-white hover:text-[#080808] cursor-pointer rounded-full w-[41px] h-[41px] flex justify-center items-center text-sm',
-          isToday || isCurrent ? "bg-skyBlue" : '',
-          isToday && isCurrent !== null && !isCurrent ? "border-[1px] border-skyBlue bg-[#080808]" : "",
-          inCurrentMonth ? 'text-white' : 'text-gray-500'
+        className={classNames(
+          'hover:bg-white hover:text-[#080808] cursor-pointer rounded-full w-[41px] h-[41px] flex justify-center items-center text-sm',
+          isToday || isCurrent ? 'bg-skyBlue' : '',
+          isToday && isCurrent !== null && !isCurrent ? 'border-[1px] border-skyBlue bg-[#080808]' : '',
+          inCurrentMonth ? 'text-white' : 'text-gray-500',
         )}
         key={getDateISO(_date)}
         {...props}
@@ -299,7 +296,7 @@ export default function CalendarComponent({ date }) {
 
   const handleChangeYear = () => {
     // setCalType('year');
-  }
+  };
 
   const handlePrevious = (evt) => {
     evt && evt.preventDefault();

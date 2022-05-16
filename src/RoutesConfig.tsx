@@ -2,10 +2,10 @@ import {
   BrowserRouter,
   Routes,
   Route,
-} from "react-router-dom";
-import Home from "./page/Home";
-import DemoPassword from "./page/DemoPassword";
-import DemoCalendar from "./page/DemoCalendar";
+} from 'react-router-dom';
+import Home from './page/Home';
+import DemoPassword from './page/DemoPassword';
+import DemoCalendar from './page/DemoCalendar';
 
 function RoutesConfig() {
   return (

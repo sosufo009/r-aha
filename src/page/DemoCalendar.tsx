@@ -1,5 +1,6 @@
-import Calendar from "../component/Calendar";
-import Layout from "../component/Layout";
+import React from 'react';
+import Calendar from '@/component/Calendar';
+import Layout from '@/component/Layout';
 
 const DemoCalendar = (): JSX.Element => {
   return (
@@ -11,7 +12,7 @@ const DemoCalendar = (): JSX.Element => {
         <Calendar />
       </div>
     </Layout>
-  )
-};
+  );
+}
 
 export default DemoCalendar;

@@ -1,13 +1,11 @@
-import RoutesConfig from "./RoutesConfig";
-
+import RoutesConfig from './RoutesConfig';
 
 function App() {
-
   return (
     <div className="App h-screen w-screen">
       <RoutesConfig />
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
