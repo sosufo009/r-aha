@@ -3,11 +3,9 @@
   "private": true,
   "version": "1.0.0",
   "scripts": {
-    "start": "vite",
-    "build": "yarn run tsc && vite build",
-    "start-bk": "yarn run build && vite preview",
-    "tsc": "./node_modules/typescript/bin/tsc",
-    "postinstall": "yarn run tsc"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "dependencies": {
     "@emotion/react": "11.9.0",
