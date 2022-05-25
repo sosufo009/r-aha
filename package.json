@@ -4,8 +4,9 @@
   "version": "1.0.0",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
-    "start": "vite preview"
+    "build": "vite build",
+    "start": "yarn run build && vite preview",
+    "start:local": "pnpm run build && vite preview"
   },
   "dependencies": {
     "@emotion/react": "11.9.0",
