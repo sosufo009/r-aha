@@ -1,3 +1,9 @@
 {
-  "root": "dist/"
+  "root": "dist/",
+  "https_only": true,
+  "routes": {
+    "/**": "index.html"
+  },
+  "clean_urls": false,
+  "error_page": "index.html"
 }
