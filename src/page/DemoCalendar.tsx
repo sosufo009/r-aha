@@ -3,25 +3,23 @@ import Layout from '../component/Layout';
 
 function DemoCalendar() {
   const handleCancelEvent = () => {
-    console.log("Click cancel");
-  }
+    console.log('Click cancel');
+  };
   const handleConfirmEvent = () => {
-    console.log("Click OK");
-  }
+    console.log('Click OK');
+  };
   return (
     <Layout>
-      <h1 className="mb-5 text-stone-100 text-4xl">
-        Calendar
-      </h1>
+      <h1 className="mb-5 text-stone-100 text-4xl">Calendar</h1>
       <div>
         <Calendar
           titleText="text"
           cancelObj={{
-            title: "Cancel",
+            title: 'Cancel',
             fn: handleCancelEvent
           }}
           confirmObj={{
-            title: "OK",
+            title: 'OK',
             fn: handleConfirmEvent
           }}
         />

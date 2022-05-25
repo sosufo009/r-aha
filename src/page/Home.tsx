@@ -7,6 +7,6 @@ const Home = (): JSX.Element => {
       <h1 className="text-3xl mb-5">HOME</h1>
     </Layout>
   );
-}
+};
 
 export default Home;
