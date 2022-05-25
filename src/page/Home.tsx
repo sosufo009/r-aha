@@ -1,5 +1,5 @@
 import React from 'react';
-import Layout from '@/component/Layout';
+import Layout from '../component/Layout';
 
 const Home = (): JSX.Element => {
   return (

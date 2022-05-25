@@ -1,332 +1,232 @@
+import { useState, createElement } from 'react';
+import moment from 'moment';
 import classNames from 'classnames';
-import { useEffect, useState } from 'react';
 import { ArrowBackIosNewOutlined, ArrowForwardIosOutlined } from '@mui/icons-material';
 
-const CURRENT_YEAR = +new Date().getFullYear();
-const CURRENT_MONTH = +new Date().getMonth() + 1;
-const WEEK_DAYS = {
-  Sunday: 'Su',
-  Monday: 'Mo',
-  Tuesday: 'Tu',
-  Wednesday: 'We',
-  Thursday: 'Th',
-  Friday: 'Fr',
-  Saturday: 'Sa',
-};
-// Calendar months names and short names
-const CALENDAR_MONTHS = {
-  January: 'January',
-  February: 'February',
-  March: 'March',
-  April: 'April',
-  May: 'May',
-  June: 'June',
-  July: 'July',
-  August: 'August',
-  September: 'September',
-  October: 'October',
-  November: 'November',
-  December: 'December',
-};
-// Weeks displayed on calendar
-const CALENDAR_WEEKS = 6;
-const zeroPad = (value: number, length: number) => `${value}`.padStart(length, '0');
-const getMonthDays = (month = CURRENT_MONTH, year = CURRENT_YEAR) => {
-  const months30 = [4, 6, 9, 11];
-  const leapYear = year % 4 === 0;
-  return month === 2
-    ? leapYear
-      ? 29
-      : 28
-    : months30.includes(month)
-      ? 30
-      : 31;
-};
-const getMonthFirstDay = (month = CURRENT_MONTH, year = CURRENT_YEAR) => +new Date(`${year}-${zeroPad(month, 2)}-01`).getDay() + 1;
+const WEEK_NAME = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
 
-const isDate = (date: Date) => {
-  const isDate = Object.prototype.toString.call(date) === '[object Date]';
-  const isValidDate = date && !Number.isNaN(date.valueOf());
-
-  return isDate && isValidDate;
-};
-
-const isSameMonth = (date: Date, basedate = new Date()) => {
-  if (!(isDate(date) && isDate(basedate))) return false;
-  const basedateMonth = +basedate.getMonth() + 1;
-  const basedateYear = basedate.getFullYear();
-  const dateMonth = +date.getMonth() + 1;
-  const dateYear = date.getFullYear();
-  return +basedateMonth === +dateMonth && +basedateYear === +dateYear;
-};
-
-const isSameDay = (date: Date, basedate = new Date()) => {
-  if (!(isDate(date) && isDate(basedate))) return false;
-  const basedateDate = basedate.getDate();
-  const basedateMonth = +basedate.getMonth() + 1;
-  const basedateYear = basedate.getFullYear();
-  const dateDate = date.getDate();
-  const dateMonth = +date.getMonth() + 1;
-  const dateYear = date.getFullYear();
-  return (
-    +basedateDate === +dateDate
-    && +basedateMonth === +dateMonth
-    && +basedateYear === +dateYear
-  );
-};
-
-const getDateISO = (date = new Date()) => {
-  if (!isDate(date)) return null;
-  return [
-    date.getFullYear(),
-    zeroPad(+date.getMonth() + 1, 2),
-    zeroPad(+date.getDate(), 2),
-  ].join('-');
-};
-
-const getPreviousMonth = (month: number, year: number) => {
-  const prevMonth = month > 1 ? month - 1 : 12;
-  const prevMonthYear = month > 1 ? year : year - 1;
-  return { month: prevMonth, year: prevMonthYear };
-};
-
-const getNextMonth = (month: number, year: number) => {
-  const nextMonth = month < 12 ? month + 1 : 1;
-  const nextMonthYear = month < 12 ? year : year + 1;
-  return { month: nextMonth, year: nextMonthYear };
-};
-
-const calendar = (month = CURRENT_MONTH, year = CURRENT_YEAR) => {
-  // Get number of days in the month and the month's first day
-
-  const monthDays = getMonthDays(month, year);
-  const monthFirstDay = getMonthFirstDay(month, year);
-  // Get number of days to be displayed from previous and next months
-  // These ensure a total of 42 days (6 weeks) displayed on the calendar
-
-  const daysFromPrevMonth = monthFirstDay - 1;
-  const daysFromNextMonth = CALENDAR_WEEKS * 7 - (daysFromPrevMonth + monthDays);
-  // Get the previous and next months and years
-
-  const { month: prevMonth, year: prevMonthYear } = getPreviousMonth(
-    month,
-    year,
-  );
-  const { month: nextMonth, year: nextMonthYear } = getNextMonth(month, year);
-  // Get number of days in previous month
-  const prevMonthDays = getMonthDays(prevMonth, prevMonthYear);
-  // Builds dates to be displayed from previous month
-
-  const prevMonthDates = [...new Array(daysFromPrevMonth)].map((n, index) => {
-    const day = index + 1 + (prevMonthDays - daysFromPrevMonth);
-    return [prevMonthYear, zeroPad(prevMonth, 2), zeroPad(day, 2)];
-  });
-  // Builds dates to be displayed from current month
-
-  const thisMonthDates = [...new Array(monthDays)].map((n, index) => {
-    const day = index + 1;
-    return [year, zeroPad(month, 2), zeroPad(day, 2)];
-  });
-  // Builds dates to be displayed from next month
-
-  const nextMonthDates = [...new Array(daysFromNextMonth)].map((n, index) => {
-    const day = index + 1;
-    return [nextMonthYear, zeroPad(nextMonth, 2), zeroPad(day, 2)];
-  });
-  // Combines all dates from previous, current and next months
-
-  return [...prevMonthDates, ...thisMonthDates, ...nextMonthDates];
-};
-
-export default function CalendarComponent({ date }) {
-  const [dateState, setDateState] = useState<{ current: Date | undefined, month: number, year: number }>({
-    current: new Date(),
-    month: 0,
-    year: 0,
-  });
-  const [calType, setCalType] = useState<'month' | 'year'>('month');
-  const [today, setToday] = useState(new Date());
-
-  useEffect(() => {
-    addDateToState(date);
-  }, []);
-
-  const addDateToState = (date: Date) => {
-    const isDateObject = isDate(date);
-    const _date = isDateObject ? date : new Date();
-    setDateState({
-      current: isDateObject ? date : null,
-      month: +_date.getMonth() + 1,
-      year: _date.getFullYear(),
-    });
+interface CalendarProps {
+  defaultDate?: moment.Moment;
+  titleText?: string;
+  cancelObj?: {
+    title: string;
+    fn: () => void;
   };
-  const getCalendarDates = () => {
-    const { current, month, year } = dateState;
-
-    const calendarMonth = month || +current?.getMonth() + 1;
-
-    const calendarYear = year || current?.getFullYear();
-    return calendar(calendarMonth, calendarYear);
+  confirmObj?: {
+    title: string;
+    fn: () => void;
   };
-
-  const renderMonthAndYear = () => {
-    const { month, year } = dateState;
-
-    const monthname = Object.keys(CALENDAR_MONTHS)[Math.max(0, Math.min(month - 1, 11))];
-    return (
-      <div className="">
-        <div className="flex flex-col mx-[12px] my-[17px]">
-          <div>
-            Text
-          </div>
-          <div className="text-3xl font-bold">
-            {monthname.substring(0, 3)}
-            ,
-            {year}
-          </div>
-        </div>
-        <div className="flex justify-between mb-[26px]">
-          <div
-            onClick={handlePrevious}
-            title="Previous Month"
-          >
-            <ArrowBackIosNewOutlined sx={{ fontSize: '12px' }} />
-          </div>
-          <div className="text-[16px]" onClick={handleChangeYear}>
-            {calType === 'month' && monthname}
-            {' '}
-            {year}
-          </div>
-          <div
-            onClick={handleNext}
-            title="Next Month"
-          >
-            <ArrowForwardIosOutlined sx={{ fontSize: '12px' }} />
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  const renderDayLabel = (day: string) => {
-    const daylabel = WEEK_DAYS[day];
-    return (
-      <div className="w-[36px] text-[11px] flex justify-center items-center text-sm text-gray-500" key={daylabel}>
-        {daylabel}
-      </div>
-    );
-  };
-
-  const renderCalendarDate = (date) => {
-    const { current, month, year } = dateState;
-    const _date = new Date(date.join('-'));
-    // Check if calendar date is same day as today
-    const isToday = isSameDay(_date, today);
-
-    // Check if calendar date is same day as currently selected date
-    const isCurrent = current && isSameDay(_date, current);
-
-    // Check if calendar date is in the same month as the state month and year
-    const inCurrentMonth = month && year && isSameMonth(_date, new Date([year, month, 1].join('-')));
-    // The click handler
-    const onClick = gotoDate(_date);
-    const props = { onClick, title: _date.toDateString() };
-    // Conditionally render a styled date component
-
-    return (
-      <div
-        className={classNames(
-          'hover:bg-white hover:text-[#080808] cursor-pointer rounded-full w-[41px] h-[41px] flex justify-center items-center text-sm',
-          isToday || isCurrent ? 'bg-skyBlue' : '',
-          isToday && isCurrent !== null && !isCurrent ? 'border-[1px] border-skyBlue bg-[#080808]' : '',
-          inCurrentMonth ? 'text-white' : 'text-gray-500',
-        )}
-        key={getDateISO(_date)}
-        {...props}
-      >
-        {_date.getDate()}
-      </div>
-    );
-  };
-
-  // new 2
-
-  const gotoDate = (date: Date) => (evt) => {
-    evt && evt.preventDefault();
-    const { current } = dateState;
-
-    !(current && isSameDay(date, current)) && addDateToState(date);
-    // onDateChanged(date);
-  };
-  const gotoPreviousMonth = () => {
-    const { month, year } = dateState;
-    // this.setState(getPreviousMonth(month, year));
-    const previousMonth = getPreviousMonth(month, year);
-    setDateState({
-      month: previousMonth.month,
-      year: previousMonth.year,
-      current: dateState.current,
-    });
-  };
-  const gotoNextMonth = () => {
-    const { month, year } = dateState;
-    const nextMonth = getNextMonth(month, year);
-    setDateState({
-      month: nextMonth.month,
-      year: nextMonth.year,
-      current: dateState.current,
-    });
-  };
-  const gotoPreviousYear = () => {
-    const { year } = dateState;
-    setDateState({
-      month: dateState.month,
-      year: year - 1,
-      current: dateState.current,
-    });
-  };
-  const gotoNextYear = () => {
-    const { year } = dateState;
-    setDateState({
-      month: dateState.month,
-      year: year + 1,
-      current: dateState.current,
-    });
-  };
-
-  const handleChangeYear = () => {
-    // setCalType('year');
-  };
-
-  const handlePrevious = (evt) => {
-    evt && evt.preventDefault();
-    if (calType === 'month') {
-      const fn = evt.shiftKey ? gotoPreviousYear : gotoPreviousMonth;
-      fn();
-    }
-  };
-  const handleNext = (evt) => {
-    evt && evt.preventDefault();
-    if (calType === 'month') {
-      const fn = evt.shiftKey ? gotoNextYear : gotoNextMonth;
-      fn();
-    }
-  };
-
-  return (
-    <div className="w-[320px] bg-[#1B1B1B] flex flex-col px-[16px]">
-      {renderMonthAndYear()}
-      <div className="flex w-full justify-evenly">
-        {Object.keys(WEEK_DAYS).map(renderDayLabel)}
-      </div>
-      <div className="flex flex-wrap w-full">
-        {calType === 'month' && getCalendarDates().map(renderCalendarDate)}
-        {calType === 'year' && <div>YEAR</div>}
-      </div>
-      <div className="flex mt-[20px] mb-[24px] justify-end">
-        <div className="mx-[20px] text-sm">Cancel</div>
-        <div className="mx-[43px] text-sm">OK</div>
-      </div>
-    </div>
-  );
 }
+
+const Calendar = (props: CalendarProps) => {
+  const defaultDate = props.defaultDate || moment();
+  const [dateState, setDateState] = useState<{ current: moment.Moment, month: number, year: number, type: 'month' | 'year' }>({
+    current: defaultDate,
+    month: parseInt(defaultDate.format("MM")) - 1,
+    year: parseInt(defaultDate.format("YYYY")),
+    type: 'month',
+  });
+
+
+  const getCurrentMonth = () => parseInt(dateState.current.format("MM")) - 1;
+  const getCurrentYear = () => parseInt(dateState.current.format("YYYY"));
+
+  function getDateList(month = getCurrentMonth(), year = getCurrentYear(), type: 'month' | 'year') {
+    if (type === 'month') {
+      let currentMonthList = [];
+      let lastMonthList = [];
+      let nextMonthList = [];
+
+      const currentMonth = moment().set('year', year).set('month', month);
+      const firstDateWeek = currentMonth.startOf('month').day();
+      const lastDateWeek = currentMonth.endOf('month').day();
+      const todayDate = moment();
+
+      for (let i = 1; i <= parseInt(currentMonth.endOf('month').format("D")); i++) {
+        currentMonth.set('date', i)
+        const isToday = moment(todayDate).isSame(currentMonth, 'day');
+        const isSelect = moment(dateState.current).isSame(currentMonth, 'day');
+
+        currentMonthList.push(
+          <div
+            className={classNames('text-white w-[36px] h-[36px] flex justify-center items-center rounded-full text-sm',
+              isToday || isSelect ? 'bg-skyBlue hover:bg-skyBlue' : 'hover:bg-white hover:text-black cursor-pointer',
+              isToday && !isSelect ? 'border border-skyBlue bg-transparent hover:bg-white hover:text-black hover:border-0 cursor-pointer' : ''
+            )}
+            onClick={() => selectDate(i, month, year, 'month')}
+            key={`dateItem${year}${month}${i}`}
+          >
+            {i}
+          </div>
+        )
+      }
+
+      const lastMonth = currentMonth.subtract(1, 'month').endOf('month');
+      const lastDate = lastMonth.format("DD");
+
+      for (let i = 0; i < firstDateWeek; i++) {
+        const lastD = parseInt(lastDate) - i;
+        lastMonthList.push(
+          <div
+            className="text-gray-500 w-[36px] h-[36px] text-sm flex justify-center items-center hover:bg-white rounded-full hover:text-black cursor-pointer"
+            onClick={() => selectDate(lastD, (parseInt(lastMonth.format("MM")) - 1), parseInt(lastMonth.format("YYYY")), 'month')}
+            key={`dateItem${parseInt(lastMonth.format("YYYY"))}${(parseInt(lastMonth.format("MM")) - 1)}${lastD}`}
+          >
+            {lastD}
+          </div>
+        )
+      }
+
+      const nextMonth = currentMonth.add(2, 'month').startOf('month');
+      const nextDate = nextMonth.format("DD");
+
+      for (let i = 0; i < (6 - lastDateWeek); i++) {
+        const nextD = parseInt(nextDate) + i;
+        nextMonthList.push(
+          <div
+            className="text-gray-500 w-[36px] h-[36px] flex text-sm justify-center items-center hover:bg-white rounded-full hover:text-black cursor-pointer"
+            onClick={() => selectDate(nextD, (parseInt(nextMonth.format("MM")) - 1), parseInt(nextMonth.format("YYYY")), 'month')}
+            key={`dateItem${parseInt(nextMonth.format("YYYY"))}${(parseInt(nextMonth.format("MM")) - 1)}${nextD}`}
+          >
+            {nextD}
+          </div>
+        )
+      }
+
+      return [...lastMonthList.reverse(), ...currentMonthList, ...nextMonthList];
+    }
+
+    const baseYear = year - (year % 20 - 1);
+    let yearList = [];
+
+    for (let i = 0; i < 20; i++) {
+      yearList.push(
+        <div
+          className={classNames('h-[24px] flex justify-center items-center text-sm mb-6 w-1/4',
+
+          )}
+          onClick={() => selectYear(baseYear + i, 'month')}
+          key={`yearItem${baseYear + i}`}
+        >
+          <span className={classNames('px-3 rounded-sm box-border py-0.5 cursor-pointer',
+            baseYear + i === year ? 'bg-skyBlue hover:bg-skyBlue' : 'hover:bg-white hover:text-black'
+          )}>
+            {baseYear + i}
+          </span>
+        </div>
+      )
+    }
+    return yearList;
+  }
+
+  const preGetTableData = () => {
+    const { month, year, type } = dateState;
+    return getDateList(month, year, type);
+  };
+
+  const renderTitle = () => {
+    const { month, year } = dateState;
+    return <div className="text-[28px] font-bold">{moment.monthsShort()[month]}, {year}</div>
+  }
+
+  const renderFunctionBar = () => {
+    const { year, month, type } = dateState;
+    return (
+      <div className="flex justify-between">
+        <div className="cursor-pointer" onClick={() => handleLeftArrow()}><ArrowBackIosNewOutlined sx={{ fontSize: '12px' }} /></div>
+        <div className="text-base" onClick={() => selectYear(year, 'year')}>{type === 'month' ? moment.months()[month] : ''} {year}</div>
+        <div className="cursor-pointer" onClick={() => handleRightArrow()}><ArrowForwardIosOutlined sx={{ fontSize: '12px' }} /></div>
+      </div>
+    )
+  }
+
+  const handleLeftArrow = () => {
+    const { month, year, type } = dateState;
+    if (type === 'year') {
+      setDateState({
+        ...dateState,
+        year: dateState.year - 20,
+      });
+    } else {
+      setDateState({
+        ...dateState,
+        month: month - 1 === -1 ? 11 : month - 1,
+        year: month - 1 === -1 ? year - 1 : year,
+      });
+    }
+  }
+
+  const handleRightArrow = () => {
+    const { month, year, type } = dateState;
+    if (type === 'year') {
+      setDateState({
+        ...dateState,
+        year: dateState.year + 20,
+      });
+    } else {
+      setDateState({
+        ...dateState,
+        month: month + 1 === 12 ? 0 : month + 1,
+        year: month + 1 === 12 ? year + 1 : year,
+      });
+    }
+  }
+
+  const selectDate = (day: number, month: number, year: number, type: "month" | "year") => {
+    const selectDate = moment().set('year', year).set('month', month).set('date', day);
+    setDateState({
+      current: selectDate,
+      month: dateState.month,
+      year: dateState.year,
+      type
+    });
+  }
+
+  const selectYear = (year: number, type: 'month' | 'year') => {
+    if (type === "year") {
+      setDateState({
+        ...dateState,
+        year,
+        type
+      });
+    } else {
+      const newDate = dateState.current.set("year", year);
+      setDateState({
+        ...dateState,
+        current: newDate,
+        year,
+        type
+      });
+    }
+  }
+
+  return (
+    <div className="bg-[#1B1B1B] w-[320px] shadow-boxShadow rounded-[10px]">
+      <div className="pt-[17px] mb-6 mx-6">
+        {props.titleText && (<div>{props.titleText}</div>)}
+        {renderTitle()}
+      </div>
+      <div className="mb-[23px] px-5">
+        {renderFunctionBar()}
+      </div>
+      {dateState.type === "month" && (
+        <div className="flex mx-4 justify-evenly mb-3">
+          {WEEK_NAME.map(week => <div key={week} className="w-[36px] flex justify-center text-[11px] text-gray-500">{week}</div>)}
+        </div>
+      )}
+      <div className={classNames('flex flex-wrap justify-evenly border border-y-0 border-[#1B1B1B] box-border pb-1',
+        dateState.type === 'year' ? 'mx-6' : 'mx-4'
+      )}>
+        {(preGetTableData() || []).map(item => item)}
+      </div>
+      {(props?.cancelObj || props?.confirmObj) && (
+        <div className="flex justify-end pb-6">
+          {props?.cancelObj && (<div className="text-sm px-9 cursor-pointer" onClick={props.cancelObj.fn}>{props.cancelObj.title}</div>)}
+          {props?.confirmObj && (<div className="text-sm px-9 cursor-pointer" onClick={props.confirmObj.fn}>{props.confirmObj.title}</div>)}
+        </div>
+      )}
+    </div>
+  )
+}
+
+export default Calendar;

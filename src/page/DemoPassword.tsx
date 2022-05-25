@@ -1,6 +1,6 @@
 import React from 'react';
-import Password from '@/component/Password';
-import Layout from '@/component/Layout';
+import Password from '../component/Password';
+import Layout from '../component/Layout';
 
 const DemoPassword = (): JSX.Element => {
   return (

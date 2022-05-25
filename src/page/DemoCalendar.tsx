@@ -1,15 +1,30 @@
-import React from 'react';
-import Calendar from '@/component/Calendar';
-import Layout from '@/component/Layout';
+import Calendar from '../component/Calendar';
+import Layout from '../component/Layout';
 
-const DemoCalendar = (): JSX.Element => {
+function DemoCalendar() {
+  const handleCancelEvent = () => {
+    console.log("Click cancel");
+  }
+  const handleConfirmEvent = () => {
+    console.log("Click OK");
+  }
   return (
     <Layout>
       <h1 className="mb-5 text-stone-100 text-4xl">
         Calendar
       </h1>
       <div>
-        <Calendar />
+        <Calendar
+          titleText="text"
+          cancelObj={{
+            title: "Cancel",
+            fn: handleCancelEvent
+          }}
+          confirmObj={{
+            title: "OK",
+            fn: handleConfirmEvent
+          }}
+        />
       </div>
     </Layout>
   );

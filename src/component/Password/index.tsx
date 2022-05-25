@@ -12,9 +12,11 @@ function Password() {
   const [validOneNumber, setValidOneNumber] = useState<boolean>(false);
   const [validSpecialChar, setValidSpecialChar] = useState<boolean>(false);
   const [validLonger, setValidLonger] = useState<boolean>(false);
+  const [isType, setIsType] = useState<boolean>(false);
 
   const validateInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const text = e.target.value;
+    if (!isType) setIsType(true);
     setValidUppercase(/[A-Z]/.test(text));
     setValidLowercase(/[a-z]/.test(text));
     setValidOneNumber(/[0-9]{1,}/.test(text));
@@ -47,7 +49,7 @@ function Password() {
           />
         </fieldset>
       </form>
-      {isFocus
+      {isType
         && (
           <div className="text-white mt-[20px] py-1 px-[12px] w-[335px] bg-[#242424] rounded-[8px] shadow-boxShadow">
             <div className="py-[9.5px] flex items-center">
