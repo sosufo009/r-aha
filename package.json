@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "start": "vite preview"
+    "start": "yarn run build && vite preview"
   },
   "dependencies": {
     "@emotion/react": "11.9.0",
