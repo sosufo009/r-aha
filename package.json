@@ -6,7 +6,7 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "start": "yarn run build && vite preview",
-    "tsc": "tsc",
+    "tsc": "./node_modules/typescript/bin/tsc",
     "postinstall": "yarn run tsc"
   },
   "dependencies": {
