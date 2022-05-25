@@ -6,8 +6,16 @@ import {
   ArrowForwardIosOutlined
 } from '@mui/icons-material';
 
+/** The list of week name */
 const WEEK_NAME = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
 
+/**
+ * Calendar props
+ * @param {Moment=} defaultDate - The default select date, if not exist then use current date.
+ * @param {string=} titleText - The text display on the top.
+ * @param {Object=} cancelObj - The cancel button details, include the title and click function.
+ * @param {Object=} confirmObj - The confirm button details, include the title and click function
+ */
 interface CalendarProps {
   defaultDate?: moment.Moment;
   titleText?: string;
@@ -38,6 +46,12 @@ const Calendar = (props: CalendarProps) => {
   const getCurrentMonth = () => parseInt(dateState.current.format('MM')) - 1;
   const getCurrentYear = () => parseInt(dateState.current.format('YYYY'));
 
+  /**
+   * The function for get date element list
+   * @param {number} [month=getCurrentMonth()] - To display which month.
+   * @param {number} [year=getCurrentYear()] - To display which year.
+   * @param {'month'|'year'} type - To display what kind of type. If month then should display the month calendar.
+   */
   function getDateList(
     month = getCurrentMonth(),
     year = getCurrentYear(),
@@ -53,6 +67,7 @@ const Calendar = (props: CalendarProps) => {
       const lastDateWeek = currentMonth.endOf('month').day();
       const todayDate = moment();
 
+      /** The for loop for get current month list */
       for (
         let i = 1;
         i <= parseInt(currentMonth.endOf('month').format('D'));
@@ -84,6 +99,7 @@ const Calendar = (props: CalendarProps) => {
       const lastMonth = currentMonth.subtract(1, 'month').endOf('month');
       const lastDate = lastMonth.format('DD');
 
+      /** The for loop for get last month list */
       for (let i = 0; i < firstDateWeek; i++) {
         const lastD = parseInt(lastDate) - i;
         lastMonthList.push(
@@ -109,6 +125,7 @@ const Calendar = (props: CalendarProps) => {
       const nextMonth = currentMonth.add(2, 'month').startOf('month');
       const nextDate = nextMonth.format('DD');
 
+      /** The for loop for get next month list */
       for (let i = 0; i < 6 - lastDateWeek; i++) {
         const nextD = parseInt(nextDate) + i;
         nextMonthList.push(
@@ -141,6 +158,7 @@ const Calendar = (props: CalendarProps) => {
     const baseYear = year - ((year % 20) - 1);
     const yearList = [];
 
+    /** The for loop for get 20 years list */
     for (let i = 0; i < 20; i++) {
       yearList.push(
         <div
@@ -166,11 +184,13 @@ const Calendar = (props: CalendarProps) => {
     return yearList;
   }
 
+  /** The function for prepare generate the list */
   const preGetTableData = () => {
     const { month, year, type } = dateState;
     return getDateList(month, year, type);
   };
 
+  /** The function for generate title */
   const renderTitle = () => {
     const { month, year } = dateState;
     return (
@@ -180,6 +200,7 @@ const Calendar = (props: CalendarProps) => {
     );
   };
 
+  /** The function for generate middle function bar */
   const renderFunctionBar = () => {
     const { year, month, type } = dateState;
     return (
@@ -197,6 +218,7 @@ const Calendar = (props: CalendarProps) => {
     );
   };
 
+  /** The function for handle left arrow event */
   const handleLeftArrow = () => {
     const { month, year, type } = dateState;
     if (type === 'year') {
@@ -213,6 +235,7 @@ const Calendar = (props: CalendarProps) => {
     }
   };
 
+  /** The function for handle right arrow event */
   const handleRightArrow = () => {
     const { month, year, type } = dateState;
     if (type === 'year') {
@@ -229,6 +252,13 @@ const Calendar = (props: CalendarProps) => {
     }
   };
 
+  /**
+   * The function for handle date select event
+   * @param {number} day - The day that select by user.
+   * @param {number} month - The dmonthay that select by user.
+   * @param {number} year - The year that select by user.
+   * @param {'month'|'year'} type - To display what kind of type. If month then should display the month calendar.
+   */
   const selectDate = (
     day: number,
     month: number,
@@ -247,6 +277,11 @@ const Calendar = (props: CalendarProps) => {
     });
   };
 
+  /**
+   * The function for handle year select event
+   * @param {number} year - The year that select by user.
+   * @param {'month'|'year'} type - To display what kind of type. If month then should display the month calendar.
+   */
   const selectYear = (year: number, type: 'month' | 'year') => {
     if (type === 'year') {
       setDateState({
