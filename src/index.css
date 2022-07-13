@@ -3,5 +3,5 @@
 @tailwind utilities;
 
 * {
-  font-family: Ubuntu;
+  font-family: 'Roboto', sans-serif;
 }
