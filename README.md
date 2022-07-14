@@ -35,7 +35,7 @@ pnpm run dev
 👤 **Ryan Lion**
 
 * Github: [@sosufo009](https://github.com/sosufo009)
-* LinkedIn: [@https:\/\/www.linkedin.com\/in\/bingshiang\/](https://linkedin.com/in/https:\/\/www.linkedin.com\/in\/bingshiang\/)
+* LinkedIn: [@https://www.linkedin.com/in/bingshiang/](https://www.linkedin.com/in/bingshiang/)
 
 ## 🤝 Contributing
 
